@@ -1,5 +1,9 @@
 name: auto check
 
+permissions:
+  actions: write
+  contents: read
+  
 on:
   workflow_dispatch:
   push:
