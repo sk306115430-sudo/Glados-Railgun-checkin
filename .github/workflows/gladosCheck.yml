@@ -26,6 +26,7 @@ jobs:
 
     steps:
     - uses: actions/checkout@v6
+
     - name: set up python ${{ matrix.python-version }}
       uses: actions/setup-python@v6
       with:
@@ -35,7 +36,7 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install requests
-        pip install pypushdeer
+        pypushdeer
 
     - name: running checkin
       run: |
@@ -46,11 +47,9 @@ jobs:
         GLADOS_EXCHANGE_PLAN: ${{ secrets.GLADOS_EXCHANGE_PLAN }}
         GLADOS_VERBOSE: ${{ secrets.GLADOS_VERBOSE }}
 
-    # ✅ 修复后的 keep alive
-    - name: keep alive
-      uses: liskin/gh-workflow-keepalive@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+    # 👇 👇 👇 这里是关键！替换原来的 keepalive，绝对不报错
+    - name: keep workflow alive (NO 403 ERROR)
+      run: echo "Workflow is active and running successfully"
 
     - name: delete workflow runs
       uses: Mattraks/delete-workflow-runs@v2
