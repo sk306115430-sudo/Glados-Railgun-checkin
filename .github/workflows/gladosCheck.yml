@@ -3,9 +3,8 @@ name: auto check
 on:
   workflow_dispatch:
   schedule:
-    # 触发点：UTC 时间 18:00（对应北京时间 凌晨 2:00）
-    # 然后加随机延迟，让实际打卡落在 0:00 ~ 6:00 之间
-    - cron: '0 18 * * *'
+    # UTC 16点 = 北京时间 0点 触发
+    - cron: '0 16 * * *'
 
 permissions:
   actions: write
@@ -27,8 +26,8 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
-    # 👇 关键：随机延迟，让打卡时间落在凌晨 0:00 ~ 6:00 之间
-    - name: 随机延迟 0~4 小时（北京时间 2:00~6:00 之间）
+    # 核心：随机延时 0~4小时 14400秒，0点触发后随机等到0-4点执行
+    - name: 凌晨随机延时打卡
       run: sleep $(( RANDOM % 14400 ))
 
     - name: install dependencies
@@ -45,6 +44,9 @@ jobs:
         GLADOS_COOKIES: ${{ secrets.GLADOS_COOKIES }}
         GLADOS_EXCHANGE_PLAN: ${{ secrets.GLADOS_EXCHANGE_PLAN }}
         GLADOS_VERBOSE: ${{ secrets.GLADOS_VERBOSE }}
+
+    - name: Workflow Keep Alive
+      run: echo "✅ 工作流已保活"
 
     - name: delete workflow runs
       uses: Mattraks/delete-workflow-runs@v2
