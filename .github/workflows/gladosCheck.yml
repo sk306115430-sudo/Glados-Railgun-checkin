@@ -2,15 +2,10 @@ name: auto check
 
 on:
   workflow_dispatch:
-  push:
-    branches: [ main ]
-    paths-ignore:
-      - 'README.md'
-      - 'imgs/'
   schedule:
-    - cron: '0 4,10 * * *'
-  watch:
-    types: started
+    # 触发点：UTC 时间 18:00（对应北京时间 凌晨 2:00）
+    # 然后加随机延迟，让实际打卡落在 0:00 ~ 6:00 之间
+    - cron: '0 18 * * *'
 
 permissions:
   actions: write
@@ -32,6 +27,10 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
 
+    # 👇 关键：随机延迟，让打卡时间落在凌晨 0:00 ~ 6:00 之间
+    - name: 随机延迟 0~4 小时（北京时间 2:00~6:00 之间）
+      run: sleep $(( RANDOM % 14400 ))
+
     - name: install dependencies
       run: |
         python -m pip install --upgrade pip
@@ -46,10 +45,6 @@ jobs:
         GLADOS_COOKIES: ${{ secrets.GLADOS_COOKIES }}
         GLADOS_EXCHANGE_PLAN: ${{ secrets.GLADOS_EXCHANGE_PLAN }}
         GLADOS_VERBOSE: ${{ secrets.GLADOS_VERBOSE }}
-
-    # 👇 这里彻底替换了那个报错的 keepalive，100% 不报错
-    - name: Workflow Keep Alive
-      run: echo "✅ 工作流已保活，不会被GitHub禁用"
 
     - name: delete workflow runs
       uses: Mattraks/delete-workflow-runs@v2
