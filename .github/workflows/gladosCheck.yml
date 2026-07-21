@@ -8,7 +8,7 @@ on:
 
 permissions:
   actions: write
-  contents: read
+  contents: write  # 改为 write，允许推送代码
 
 jobs:
   build:
@@ -45,9 +45,15 @@ jobs:
         GLADOS_EXCHANGE_PLAN: ${{ secrets.GLADOS_EXCHANGE_PLAN }}
         GLADOS_VERBOSE: ${{ secrets.GLADOS_VERBOSE }}
 
-    - name: Workflow Keep Alive
-      run: echo "✅ 工作流已保活"
+    # 每天顺便做一次空提交，保持仓库活跃，防止定时任务被禁用
+    - name: Keep repository active
+      run: |
+        git config user.name "github-actions[bot]"
+        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git commit --allow-empty -m "♻️ keep repository active [skip ci]"
+        git push
 
+    # 删除旧的 workflow 运行记录，保留最近7天或最近7次
     - name: delete workflow runs
       uses: Mattraks/delete-workflow-runs@v2
       with:
