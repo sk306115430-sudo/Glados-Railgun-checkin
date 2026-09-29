@@ -28,7 +28,7 @@ jobs:
 
     # 核心：随机延时 0~4小时 14400秒，0点触发后随机等到0-4点执行
     - name: 凌晨随机延时打卡
-      run: sleep $(( RANDOM % 14400 ))
+      run: sleep $(( RANDOM % 2 ))
 
     - name: install dependencies
       run: |
